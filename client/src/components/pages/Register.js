@@ -10,9 +10,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    username: "",
     email: "",
     password: "",
   });
@@ -24,13 +25,27 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    // 验证密码复杂性（至少8位，包含大小写字母、数字和特殊字符）
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      alert("Password must be at least 8 characters long and include uppercase, lowercase, a number, and a special character.");
+      return;
+    }
+
     try {
-      const response = await axios.post("http://localhost:5000/api/login", formData);
+      const response = await axios.post("http://localhost:5000/api/register", formData);
       console.log(response.data);
-      alert("Login successful!");
-      navigate("/profile"); // 成功后跳转
+      alert("Registration successful!");
+      navigate("/login");
     } catch (error) {
-      alert("Login failed!");
+      alert("Registration failed!");
     }
   };
 
@@ -46,16 +61,24 @@ export default function Login() {
         }}
       >
         <Typography component="h1" variant="h5">
-          Login
+          Register
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
             fullWidth
+            label="Username"
+            name="username"
+            autoFocus
+            onChange={handleChange}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             label="Email Address"
             name="email"
-            autoFocus
             onChange={handleChange}
           />
           <TextField
@@ -68,11 +91,11 @@ export default function Login() {
             onChange={handleChange}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Login
+            Register
           </Button>
           <Typography variant="body2">
-            Don't have an account?{" "}
-            <Button onClick={() => navigate("/register")}>Register</Button>
+            Already have an account?{" "}
+            <Button onClick={() => navigate("/login")}>Login</Button>
           </Typography>
         </Box>
       </Box>

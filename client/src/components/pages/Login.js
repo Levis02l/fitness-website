@@ -10,30 +10,31 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function Register() {
+export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: "",
     email: "",
     password: "",
-  });
+  });// 管理用户输入的邮箱和密码
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-  };
+  };// 更新表单数据，根据用户输入实时修改
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/register", formData);
-      console.log(response.data);
-      alert("Registration successful!");
-      navigate("/login");
+      const response = await axios.post("http://localhost:5000/api/login", formData);// 发送登录请求
+      const { token } = response.data; 
+      localStorage.setItem("token", token); // 将返回的JWT存储在localStorage中
+      alert("Login successful!");
+      navigate("/dashboard"); 
     } catch (error) {
-      alert("Registration failed!");
+      alert("Login failed!");
     }
   };
+  
 
   return (
     <Container component="main" maxWidth="xs">
@@ -47,24 +48,16 @@ export default function Register() {
         }}
       >
         <Typography component="h1" variant="h5">
-          Register
+          Login
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
             fullWidth
-            label="Username"
-            name="username"
-            autoFocus
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
             label="Email Address"
             name="email"
+            autoFocus
             onChange={handleChange}
           />
           <TextField
@@ -77,11 +70,11 @@ export default function Register() {
             onChange={handleChange}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Register
+            Login
           </Button>
           <Typography variant="body2">
-            Already have an account?{" "}
-            <Button onClick={() => navigate("/login")}>Login</Button>
+            Don't have an account?{" "}
+            <Button onClick={() => navigate("/register")}>Register</Button>
           </Typography>
         </Box>
       </Box>
